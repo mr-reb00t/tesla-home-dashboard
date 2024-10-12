@@ -1,0 +1,4 @@
+AuthUserFile .htpasswd
+AuthType Basic
+AuthName "Tesla Home Dashboard"
+Require valid-user
