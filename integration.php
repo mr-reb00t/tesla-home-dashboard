@@ -3,6 +3,16 @@
 ini_set('display_errors', 1);*/
 // integration.php
 
+session_start();
+
+// Verificar si el usuario ha iniciado sesión
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    // Si no está autenticado, devolver un error
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Acceso no autorizado.']);
+    exit();
+}
+
 header('Content-Type: application/json');
 
 // Obtener los datos de la solicitud
