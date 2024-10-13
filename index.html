@@ -12,13 +12,15 @@
         body {
             margin: 0;
             font-family: 'Roboto', Arial, sans-serif;
-            background-color: #eeedf0;
+            /*background-color: #7b7a7d;*/
+            background-color: #727273ad;
             color: #000000;
+            overflow: hidden;
         }
 
         .container {
             position: relative;
-            width: calc(100% - 150px); /* Restamos 300px para el padding lateral */
+            width: calc(100% - 150px); /* Restamos 150px para el padding lateral */
             height: 100vh;
             margin: 0 auto; /* Centramos el contenedor */
             padding: 0 20px; /* Padding lateral de 20px */
@@ -44,7 +46,8 @@
         .weather-info i {
             margin-right: 10px;
             font-size: 28px;
-            color: #747376;
+            /*color: #747376;*/
+            color: #f5f5f5;
             width: 37px;
             text-align: center;
         }
@@ -57,13 +60,15 @@
         .weather-title {
             font-size: 14px; /* Títulos más pequeños */
             font-weight: bold;
-            color: #747376; /* Color gris */
+            /*color: #747376;*/ /* Color gris */
+            color: #f5f5f5;
             margin-bottom: 5px;
         }
 
         .weather-value {
             font-size: 18px; /* Tamaño del valor */
-            color: #959698;
+            /*color: #959698;*/
+            color: #f5f5f5;
         }
 
         /* Estilos para el panel central (imagen del coche) */
@@ -80,11 +85,12 @@
             font-size: 48px;
             font-weight: bold;
             margin-bottom: 20px;
-            color: #000000;
+            /*color: #000000;*/
+            color: #ffffff;
         }
 
         .car-image {
-            width: 1280px;
+            width: 1237px;
             height: auto;
         }
 
@@ -96,6 +102,7 @@
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
+            z-index: 100;
         }
 
         .button {
@@ -192,6 +199,31 @@
             0%, 100% { opacity: 0.2; }
             20% { opacity: 1; }
         }
+
+        /* Estilos para la barrera */
+        .barrera .static {
+            position: absolute;
+            bottom: -16px;
+            z-index: 4;
+            width: 100%;
+        }
+
+        .barrera .dynamic {
+            position: absolute;
+            bottom: -16px;
+            z-index: 3;
+            width: 56%;
+            left: 234px; /* Posición cerrada inicial */
+            transition: left 30s linear; /* Animación de movimiento */
+        }
+        /* Clases para la animación */
+        .barrera-abierta {
+            left: -351px !important; /* Posición abierta */
+        }
+
+        .barrera-animar {
+            transition: left 30s linear;
+        }
     </style>
 </head>
 <body>
@@ -282,7 +314,7 @@
                 </span>
             </button>
             <!-- Botón "He llegado" -->
-            <button class="button" onclick="handleButtonClick(this, 'he-llegado')">
+            <button class="button" onclick="handleButtonClick(this, 'cierra-todo')">
                 <span class="button-content">
                     <span class="button-icon">
                         <i class="fas fa-check-circle"></i>
@@ -298,19 +330,25 @@
         </div>
     </div>
 
+    <div class="barrera">
+        <img class="static" src="https://private.gosmart.pt:2053/tesla/img/barrera_estatica_dark.webp">
+        <img class="dynamic" src="https://private.gosmart.pt:2053/tesla/img/barrera_dark.webp">
+    </div>
+
     <!-- Scripts para obtener datos del clima -->
     <script>
         // Aquí puedes usar una API pública para obtener los datos meteorológicos
         // Por ejemplo, OpenWeatherMap API
-        const apiKey = 'TU_API_KEY';
+        const apiKey = 'YOUR_API_KEY';
         const city = 'Palmela,PT';
 
         fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=es&appid=${apiKey}`)
             .then(response => response.json())
             .then(data => {
-                
-                //const tempExterior = data.main.temp;
-                //const viento = data.wind.speed;
+
+                const tempExterior = data.main.temp;
+                const viento = data.wind.speed;
+
 
                 document.getElementById('temp-exterior').textContent = tempExterior.toFixed(1) + '°C';
                 document.getElementById('viento').textContent = viento + ' km/h';
@@ -320,9 +358,13 @@
             });
 
         // Simulación de temperatura interior
+        const tempInterior = 22; // Puedes reemplazar este valor con datos reales si los tienes
         document.getElementById('temp-interior').textContent = tempInterior + '°C';
 
-        // Función para manejar el clic en los botones
+        // Variable para controlar el estado de la barrera
+        let barreraAbierta = false;
+        let barreraTimeout;
+
         // Función para manejar el clic en los botones
         function handleButtonClick(button, action) {
             // Añadir clase de carga
@@ -344,6 +386,17 @@
                 if (data.success) {
                     // Acción completada exitosamente
                     console.log(`Acción '${action}' ejecutada con éxito.`);
+
+                    // Si la acción requiere abrir la barrera
+                    if (action === 'salir' || action === 'llegar' || action === 'abrir-entrada') {
+                        abrirBarrera();
+                    }
+
+                    // Cerrar barrera
+                    if (action === 'cierra-todo') {
+                        cerrarBarrera();
+                    }
+
                 } else {
                     // Hubo un error al ejecutar la acción
                     console.error(`Error al ejecutar la acción '${action}':`, data.message);
@@ -355,6 +408,39 @@
                 button.classList.remove('loading');
                 alert('Ocurrió un error al procesar la solicitud.');
             });
+        }
+
+        function abrirBarrera() {
+            if (!barreraAbierta) {
+                barreraAbierta = true;
+                const barrera = document.querySelector('.barrera .dynamic');
+
+                // Añadir clase para animar
+                barrera.classList.add('barrera-animar');
+                barrera.offsetHeight; // Forzar reflow
+                barrera.classList.add('barrera-abierta');
+
+                // Programar el cierre automático después de 2 minutos (120,000 ms)
+                if (barreraTimeout) {
+                    clearTimeout(barreraTimeout);
+                }
+                barreraTimeout = setTimeout(cerrarBarrera, 120000);
+            }
+        }
+
+        function cerrarBarrera() {
+            if (barreraAbierta) {
+                const barrera = document.querySelector('.barrera .dynamic');
+
+                // Añadir clase para animar
+                barrera.classList.add('barrera-animar');
+                barrera.classList.remove('barrera-abierta');
+
+                // Esperar a que termine la animación antes de cambiar el estado
+                setTimeout(() => {
+                    barreraAbierta = false;
+                }, 30000); // Debe coincidir con la duración de la animación (30s)
+            }
         }
     </script>
 </body>
