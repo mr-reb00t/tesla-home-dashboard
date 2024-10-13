@@ -2,13 +2,13 @@
 session_start();
 
 // Definir la contraseña codificada
-$contraseña_correcta = 'SET_YOUR_PASSWORD';
+$my_password = 'SET_YOUR_PASSWORD';
 
 // Manejar el envío del formulario de inicio de sesión
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
     $password_ingresada = $_POST['password'];
 
-    if ($password_ingresada === $contraseña_correcta) {
+    if ($password_ingresada === $my_password) {
         // Iniciar sesión
         $_SESSION['logged_in'] = true;
         header('Location: index.php');
