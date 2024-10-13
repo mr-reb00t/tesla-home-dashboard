@@ -1,3 +1,98 @@
+<?php
+session_start();
+
+// Definir la contraseña codificada
+$contraseña_correcta = 'SET_YOUR_PASSWORD';
+
+// Manejar el envío del formulario de inicio de sesión
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
+    $password_ingresada = $_POST['password'];
+
+    if ($password_ingresada === $contraseña_correcta) {
+        // Iniciar sesión
+        $_SESSION['logged_in'] = true;
+        header('Location: index.php');
+        exit();
+    } else {
+        $error = 'Contraseña incorrecta. Inténtalo de nuevo.';
+    }
+}
+
+// Si el usuario no está autenticado, mostrar el formulario de inicio de sesión
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+?>
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Iniciar Sesión - Tesla Control</title>
+        <!-- Enlace a Google Fonts para usar 'Roboto' -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap">
+        <!-- Estilos básicos para el formulario -->
+        <style>
+            body {
+                font-family: 'Roboto', Arial, sans-serif;
+                background-color: #727273ad;
+                color: #f5f5f5;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }
+
+            .login-container {
+                background-color: #2c2c2c;
+                padding: 40px;
+                border-radius: 10px;
+                text-align: center;
+            }
+
+            .login-container h1 {
+                margin-bottom: 20px;
+            }
+
+            .login-container input[type="password"] {
+                padding: 10px;
+                width: 100%;
+                margin-bottom: 20px;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+            }
+
+            .login-container input[type="submit"] {
+                padding: 10px 20px;
+                background-color: #3e6ae4;
+                color: #ffffff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+
+            .error {
+                color: #ff4d4d;
+                margin-bottom: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="login-container">
+            <h1>Iniciar Sesión</h1>
+            <?php if (isset($error)) { echo '<div class="error">'.$error.'</div>'; } ?>
+            <form method="post" action="">
+                <input type="password" name="password" placeholder="Password" required>
+                <input type="submit" value="Login">
+            </form>
+        </div>
+    </body>
+    </html>
+<?php
+    exit();
+    }
+    // Si el usuario está autenticado, mostrar el contenido original
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -339,7 +434,7 @@
     <script>
         // Aquí puedes usar una API pública para obtener los datos meteorológicos
         // Por ejemplo, OpenWeatherMap API
-        const apiKey = 'YOUR_API_KEY';
+        const apiKey = 'SET_YOUR_API';
         const city = 'Palmela,PT';
 
         fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=es&appid=${apiKey}`)
