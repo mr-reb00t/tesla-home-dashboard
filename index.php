@@ -1,14 +1,25 @@
 <?php
-session_start();
+ini_set('session.gc_maxlifetime', 365 * 24 * 60 * 60);
+
+session_set_cookie_params([
+    'lifetime' => 365 * 24 * 60 * 60, // 1 año en segundos
+    'path' => '/',
+    'domain' => '', // Puedes especificar tu dominio si es necesario
+    'secure' => true, // True si usas HTTPS
+    'httponly' => true,
+    'samesite' => 'Lax' // Puedes usar 'Strict' o 'None' dependiendo de tus necesidades
+]);
+
+session_start(); 
 
 // Definir la contraseña codificada
-$my_password = 'SET_YOUR_PASSWORD';
+$contraseña_correcta = 'SET_YOUR_PASSWORD';
 
 // Manejar el envío del formulario de inicio de sesión
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
     $password_ingresada = $_POST['password'];
 
-    if ($password_ingresada === $my_password) {
+    if ($password_ingresada === $contraseña_correcta) {
         // Iniciar sesión
         $_SESSION['logged_in'] = true;
         header('Location: index.php');
@@ -20,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
 
 // Si el usuario no está autenticado, mostrar el formulario de inicio de sesión
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    
 ?>
     <!DOCTYPE html>
     <html lang="es">
@@ -153,7 +165,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
         }
 
         .weather-title {
-            font-size: 14px; /* Títulos más pequeños */
+            font-size: 18px; /* Títulos más pequeños */
             font-weight: bold;
             /*color: #747376;*/ /* Color gris */
             color: #f5f5f5;
@@ -161,7 +173,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
         }
 
         .weather-value {
-            font-size: 18px; /* Tamaño del valor */
+            font-size: 22px; /* Tamaño del valor */
             /*color: #959698;*/
             color: #f5f5f5;
         }
@@ -434,7 +446,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     <script>
         // Aquí puedes usar una API pública para obtener los datos meteorológicos
         // Por ejemplo, OpenWeatherMap API
-        const apiKey = 'SET_YOUR_API';
+        const apiKey = 'e5915b1f440c310ad7939efe613dba1a';
         const city = 'Palmela,PT';
 
         fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=es&appid=${apiKey}`)
