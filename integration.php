@@ -27,11 +27,11 @@ $action = $input['action'];
 
 // Mapeo de acciones a webhook IDs
 $actionMap = [
-    'salir' => '-YOUR_WEBHOOK_ID', 
-    'llegar' => '-YOUR_WEBHOOK_ID',
-    'abrir-entrada' => '-YOUR_WEBHOOK_ID',
-    'abrir-garaje' => '-YOUR_WEBHOOK_ID',
-    'he-llegado' => '-YOUR_WEBHOOK_ID'
+    'salir' => 'YOUR_WEBHOOK_ID', 
+    'llegar' => 'YOUR_WEBHOOK_ID',
+    'abrir-entrada' => 'YOUR_WEBHOOK_ID',
+    'abrir-garaje' => 'YOUR_WEBHOOK_ID',
+    'cierra-todo' => 'YOUR_WEBHOOK_ID'
 ];
 
 // Verificar si la acción existe en el mapeo
@@ -41,7 +41,7 @@ if (!array_key_exists($action, $actionMap)) {
 }
 
 // Construir la URL del webhook
-$haUrl = 'http://YOUR_HOME_ASSSITANT_SERVER_HOST_OR_IP:8123/api/webhook/' . $actionMap[$action];
+$haUrl = 'http://homeassistant.local:8123/api/webhook/' . $actionMap[$action];
 
 // Iniciar cURL
 $ch = curl_init();
